@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wm1/detail_product.dart';
+import 'package:wm1/views/screen/auth/auth.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,8 +10,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const DetailProduct(),
-    );
+    // ignore: prefer_const_constructors
+    return MaterialApp(debugShowCheckedModeBanner: false, home: LoginPage());
   }
 }
