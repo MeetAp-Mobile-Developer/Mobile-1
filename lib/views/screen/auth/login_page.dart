@@ -15,6 +15,42 @@ class LoginPage extends StatelessWidget {
     TextEditingController _usernameController = TextEditingController();
     TextEditingController _passwordController = TextEditingController();
 
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+    handSignIn() async {
+      if (_usernameController.text.isNotEmpty &&
+          _passwordController.text.isNotEmpty) {
+        final result = await authProvider.login(
+          username: _usernameController.text,
+          password: _passwordController.text,
+        );
+        result.fold(
+          (failure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(failure.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          },
+          (user) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HomePage(),
+              ),
+            );
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   SnackBar(
+            //     content: Text('Login Berhasil'),
+            //     backgroundColor: Colors.green,
+            //   ),
+            // );
+          },
+        );
+      }
+    }
+
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       body: Padding(
@@ -87,13 +123,13 @@ class LoginPage extends StatelessWidget {
                       labelText: 'Password',
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.visibility_off,
                         ),
                         onPressed: () {},
                       ),
                     ),
-                    obscureText: false, // Atur visibilitas password
+                    obscureText: true, // Atur visibilitas password
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Password tidak boleh kosong';
@@ -104,7 +140,9 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 13),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    handSignIn();
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,
                     minimumSize: const Size(200, 45),
@@ -112,8 +150,19 @@ class LoginPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
-                  child: const Text('Login'),
-                )
+                  child: Center(
+                      child: authProvider.isLoading
+                          ? const CircularProgressIndicator(
+                              color: AppColors.warningColor,
+                            )
+                          : const Text(
+                              'Login',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.0,
+                              ),
+                            )),
+                ),
               ],
             ),
           ),
